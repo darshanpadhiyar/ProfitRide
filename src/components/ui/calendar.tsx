@@ -23,7 +23,7 @@ function Calendar({
       classNames={{
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
         month: "space-y-4",
-        month_caption: "flex justify-center pt-1 relative items-center h-9",
+        month_caption: "flex justify-center pt-1 relative items-center h-10",
         caption_label: cn(
           "text-sm font-bold",
           props.captionLayout === "dropdown" && "hidden"
@@ -56,12 +56,12 @@ function Calendar({
         range_middle:
           "aria-selected:bg-accent aria-selected:text-accent-foreground",
         hidden: "invisible",
-        dropdown_container: "flex gap-1 items-center px-2",
+        dropdown_container: "flex gap-2 items-center px-4",
         dropdown: cn(
-          "bg-transparent font-bold focus:outline-none cursor-pointer p-1 rounded-lg hover:bg-muted text-xs appearance-none",
+          "bg-background font-black focus:outline-none cursor-pointer p-2 rounded-xl hover:bg-muted text-[11px] uppercase tracking-widest appearance-none border border-white/10 shadow-sm",
           "focus-visible:ring-2 focus-visible:ring-primary"
         ),
-        caption_dropdowns: "flex justify-center gap-1",
+        caption_dropdowns: "flex justify-center gap-2",
         ...classNames,
       }}
       components={{

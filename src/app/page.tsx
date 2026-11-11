@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
@@ -31,9 +32,10 @@ import {
   Coins,
   Receipt,
   ShieldCheck,
-  TrendingDown
+  TrendingDown,
+  ArrowRight
 } from "lucide-react";
-import { format, subDays, startOfWeek, startOfMonth, isSameDay, isWithinInterval, endOfWeek, endOfMonth, parseISO } from "date-fns";
+import { format, subDays, addDays, startOfWeek, startOfMonth, isSameDay, isWithinInterval, endOfWeek, endOfMonth, parseISO, eachDayOfInterval, subMonths, addMonths } from "date-fns";
 import { cn } from "@/lib/utils";
 
 export default function Dashboard() {
@@ -63,7 +65,9 @@ export default function Dashboard() {
       isPresent: false, 
       totalDays: 0, 
       weekStart: new Date(), 
-      weekEnd: new Date() 
+      weekEnd: new Date(),
+      monthStart: new Date(),
+      monthEnd: new Date()
     };
 
     const calculateStats = (filteredEntries: any[]) => {
@@ -118,9 +122,33 @@ export default function Dashboard() {
       isPresent,
       totalDays: sortedDates.length,
       weekStart,
-      weekEnd
+      weekEnd,
+      monthStart,
+      monthEnd
     };
   }, [entries, selectedDate, mounted]);
+
+  const calendarModifiers = useMemo(() => {
+    if (!mounted || !selectedDate) return {};
+    
+    const modifiers: any = {
+      booked: entries.map(e => parseISO(e.date))
+    };
+    
+    if (period === 'week') {
+      const start = startOfWeek(selectedDate, { weekStartsOn: 1 });
+      const end = endOfWeek(selectedDate, { weekStartsOn: 1 });
+      modifiers.highlighted = eachDayOfInterval({ start, end });
+    }
+    
+    if (period === 'month') {
+      const start = startOfMonth(selectedDate);
+      const end = endOfMonth(selectedDate);
+      modifiers.highlighted = eachDayOfInterval({ start, end });
+    }
+    
+    return modifiers;
+  }, [selectedDate, period, entries, mounted]);
 
   if (!mounted || isUserLoading || loading || !selectedDate) return (
     <div className="h-[100dvh] flex flex-col items-center justify-center space-y-4">
@@ -138,24 +166,37 @@ export default function Dashboard() {
   const dayStats = stats.day!;
   const yesterdayStats = stats.yesterday!;
   
-  const earningProgress = Math.min((dayStats.earnings / settings.dailyGoal) * 100, 100);
-  const orderGoal = 20; 
-  const orderProgress = Math.min((dayStats.orders / orderGoal) * 100, 100);
-
   const earningsDiff = dayStats.earnings - yesterdayStats.earnings;
   const isEarningsUp = earningsDiff >= 0;
 
-  const handlePrevDay = () => setSelectedDate(prev => prev ? subDays(prev, 1) : new Date());
-  const handleNextDay = () => setSelectedDate(prev => prev ? subDays(prev, -1) : new Date());
+  const handlePrev = () => {
+    setSelectedDate(prev => {
+      if (!prev) return new Date();
+      if (period === 'day') return subDays(prev, 1);
+      if (period === 'week') return subDays(prev, 7);
+      if (period === 'month') return subMonths(prev, 1);
+      return subDays(prev, 1);
+    });
+  };
+
+  const handleNext = () => {
+    setSelectedDate(prev => {
+      if (!prev) return new Date();
+      let nextDate;
+      if (period === 'day') nextDate = addDays(prev, 1);
+      else if (period === 'week') nextDate = addDays(prev, 7);
+      else if (period === 'month') nextDate = addMonths(prev, 1);
+      else nextDate = addDays(prev, 1);
+      
+      return nextDate > new Date() ? new Date() : nextDate;
+    });
+  };
 
   const formatHours = (decimalHours: number) => {
     const h = Math.floor(decimalHours);
     const m = Math.round((decimalHours % 1) * 60);
     return `${h}h ${m}m`;
   };
-
-  const weekStart = stats.weekStart;
-  const weekEnd = stats.weekEnd;
 
   return (
     <div className="py-6 space-y-8 pb-32">
@@ -168,45 +209,12 @@ export default function Dashboard() {
           <h1 className="text-3xl font-black tracking-tighter text-foreground">
             Hi, {user?.displayName?.split(' ')[0] || "Partner"}
           </h1>
-          <div className="flex items-center gap-2">
-            <p className="text-muted-foreground text-[10px] font-bold uppercase tracking-widest">{format(selectedDate, 'EEEE, MMM dd')}</p>
-            <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
-              <PopoverTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-6 w-6 text-primary rounded-full hover:bg-primary/10 transition-colors">
-                  <CalendarIcon className="w-3.5 h-3.5" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0 z-50 rounded-[2rem] border border-white/10 glass shadow-2xl" align="start">
-                <Calendar
-                  mode="single"
-                  captionLayout="dropdown"
-                  startMonth={new Date(2020, 0)}
-                  endMonth={new Date()}
-                  selected={selectedDate}
-                  onSelect={(date) => {
-                    if (date) {
-                      setSelectedDate(date);
-                      setCalendarOpen(false);
-                    }
-                  }}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
-          </div>
+          <p className="text-muted-foreground text-[10px] font-black uppercase tracking-widest bg-muted/30 px-2 py-0.5 rounded-md w-fit">
+            Dashboard Overview
+          </p>
         </div>
-        <div className="flex flex-col items-end gap-3">
-          <div className="bg-primary/10 text-primary px-3 py-1.5 rounded-2xl text-[10px] font-black flex items-center gap-2 border border-primary/20 uppercase tracking-wider neural-glow">
-            <Fuel className="w-3.5 h-3.5" /> ₹{settings.petrolPrice}/L
-          </div>
-          <div className="flex bg-muted/30 rounded-full p-1 border border-white/5 backdrop-blur-sm">
-            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-primary/10" onClick={handlePrevDay}>
-              <ChevronLeft className="w-5 h-5" />
-            </Button>
-            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-primary/10" onClick={handleNextDay} disabled={isSameDay(selectedDate, new Date())}>
-              <ChevronRight className="w-5 h-5" />
-            </Button>
-          </div>
+        <div className="bg-primary/10 text-primary px-3 py-1.5 rounded-2xl text-[10px] font-black flex items-center gap-2 border border-primary/20 uppercase tracking-wider neural-glow">
+          <Fuel className="w-3.5 h-3.5" /> ₹{settings.petrolPrice}/L
         </div>
       </header>
 
@@ -297,7 +305,79 @@ export default function Dashboard() {
           <TabsTrigger value="month" className="rounded-2xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:neural-glow font-black text-[10px] uppercase tracking-widest">Month</TabsTrigger>
         </TabsList>
 
-        <TabsContent value={period} className="space-y-6 mt-8 focus-visible:outline-none">
+        <div className="mt-6 flex flex-col items-center gap-4">
+          <div className="flex items-center gap-3 bg-muted/30 p-1.5 rounded-2xl border border-white/5 backdrop-blur-sm w-fit">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-10 w-10 rounded-xl hover:bg-primary/10 transition-colors" 
+              onClick={handlePrev}
+            >
+              <ChevronLeft className="w-6 h-6" />
+            </Button>
+            
+            <Popover open={calendarOpen} onOpenChange={setCalendarOpen} modal={true}>
+              <PopoverTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  className="h-10 px-4 gap-2 text-primary font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-primary/10 transition-all border border-primary/10"
+                >
+                  <CalendarIcon className="w-4 h-4" />
+                  Select Date
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0 z-[100] rounded-[2rem] border border-white/10 glass shadow-2xl" align="center" sideOffset={8}>
+                <Calendar
+                  mode="single"
+                  captionLayout="dropdown"
+                  startMonth={new Date(2020, 0)}
+                  endMonth={new Date()}
+                  selected={selectedDate}
+                  onSelect={(date) => {
+                    if (date) {
+                      setSelectedDate(date);
+                      setCalendarOpen(false);
+                    }
+                  }}
+                  modifiers={calendarModifiers}
+                  modifiersClassNames={{
+                    highlighted: "bg-primary/20 text-primary rounded-none first:rounded-l-xl last:rounded-r-xl",
+                    booked: "after:content-[''] after:absolute after:bottom-1 after:left-1/2 after:-translate-x-1/2 after:w-1 after:h-1 after:bg-primary after:rounded-full"
+                  }}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-10 w-10 rounded-xl hover:bg-primary/10 transition-colors" 
+              onClick={handleNext} 
+              disabled={isSameDay(selectedDate, new Date())}
+            >
+              <ChevronRight className="w-6 h-6" />
+            </Button>
+          </div>
+
+          <div className="flex flex-col items-center gap-1">
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground opacity-60">
+                {period === 'day' ? 'Daily Selection' : period === 'week' ? 'Weekly Range' : 'Monthly Selection'}
+              </span>
+            </div>
+            <div className="text-sm font-black tracking-tight text-foreground bg-primary/5 px-6 py-2.5 rounded-2xl border border-primary/10 shadow-sm neural-glow">
+              {period === 'day' 
+                ? format(selectedDate, 'EEEE, MMM dd, yyyy') 
+                : period === 'week'
+                  ? `${format(stats.weekStart, 'MMM dd')} — ${format(stats.weekEnd, 'MMM dd, yyyy')}`
+                  : format(selectedDate, 'MMMM yyyy')
+              }
+            </div>
+          </div>
+        </div>
+
+        <TabsContent value={period} className="space-y-6 mt-6 focus-visible:outline-none">
           <div className="grid grid-cols-2 gap-4">
             <StatCard title="Total Earnings" value={`₹${currentStats.earnings.toFixed(0)}`} icon={Wallet} color="text-primary" bg="bg-primary/10" />
             <StatCard title="Tips" value={`₹${currentStats.tips.toFixed(0)}`} icon={Coins} color="text-emerald-400" bg="bg-emerald-400/10" />

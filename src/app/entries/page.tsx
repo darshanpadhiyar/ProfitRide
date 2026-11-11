@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo, useRef } from "react";
@@ -35,9 +36,10 @@ import {
   Loader2,
   Receipt,
   Zap,
-  Clock
+  Clock,
+  FilterX
 } from "lucide-react";
-import { format, parseISO, isToday, startOfWeek, startOfMonth, isWithinInterval, endOfWeek, endOfMonth } from "date-fns";
+import { format, parseISO, isToday, startOfWeek, startOfMonth, isWithinInterval, endOfWeek, endOfMonth, isSameDay } from "date-fns";
 import { DeliveryEntry } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
@@ -48,6 +50,7 @@ export default function EntriesPage() {
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [calendarOpen, setCalendarOpen] = useState(false);
+  const [filterCalendarOpen, setFilterCalendarOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isScanning, setIsScanning] = useState(false);
@@ -55,6 +58,7 @@ export default function EntriesPage() {
   
   const [searchQuery, setSearchQuery] = useState("");
   const [filterPeriod, setFilterPeriod] = useState<"all" | "today" | "week" | "month">("all");
+  const [filterDate, setFilterDate] = useState<Date | undefined>(undefined);
 
   const [formData, setFormData] = useState({
     date: '',
@@ -200,15 +204,20 @@ export default function EntriesPage() {
         });
       }
 
+      let matchesSpecificDate = true;
+      if (filterDate) {
+        matchesSpecificDate = isSameDay(entryDate, filterDate);
+      }
+
       const matchesSearch = 
         entry.notes?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         entry.date.includes(searchQuery) ||
         entry.earnings.toString().includes(searchQuery) ||
         entry.orders.toString().includes(searchQuery);
 
-      return matchesPeriod && matchesSearch;
+      return matchesPeriod && matchesSpecificDate && matchesSearch;
     });
-  }, [entries, searchQuery, filterPeriod]);
+  }, [entries, searchQuery, filterPeriod, filterDate]);
 
   const calculatedFuel = (formData.distance / settings.mileage) * settings.petrolPrice;
   const estimatedProfit = (formData.earnings + formData.tips + formData.incentive) - (calculatedFuel + formData.manualExpenses);
@@ -415,35 +424,83 @@ export default function EntriesPage() {
         </Dialog>
       </div>
 
-      <div className="px-1 flex gap-3">
-        <div className="relative flex-1 group">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
-          <Input 
-            placeholder="Search logs..." 
-            className="pl-12 h-12 rounded-2xl bg-muted/30 border-white/5 focus:bg-muted/50 transition-all font-medium text-sm text-foreground"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          {searchQuery && (
-            <button 
-              onClick={() => setSearchQuery("")}
-              className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-white/10 rounded-full"
+      <div className="px-1 flex flex-col gap-3">
+        <div className="flex gap-3">
+          <div className="relative flex-1 group">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+            <Input 
+              placeholder="Search logs..." 
+              className="pl-12 h-12 rounded-2xl bg-muted/30 border-white/5 focus:bg-muted/50 transition-all font-medium text-sm text-foreground"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            {searchQuery && (
+              <button 
+                onClick={() => setSearchQuery("")}
+                className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-white/10 rounded-full"
+              >
+                <X className="w-3.5 h-3.5 text-muted-foreground" />
+              </button>
+            )}
+          </div>
+          <Select value={filterPeriod} onValueChange={(val: any) => setFilterPeriod(val)}>
+            <SelectTrigger className="w-[120px] h-12 rounded-2xl bg-muted/30 border-white/5 text-[10px] font-black uppercase tracking-widest transition-all hover:bg-muted/50 text-foreground">
+              <SelectValue placeholder="Period" />
+            </SelectTrigger>
+            <SelectContent className="rounded-2xl border border-white/10 glass shadow-2xl">
+              <SelectItem value="all" className="text-[10px] font-black uppercase">All Time</SelectItem>
+              <SelectItem value="today" className="text-[10px] font-black uppercase">Today</SelectItem>
+              <SelectItem value="week" className="text-[10px] font-black uppercase">This Week</SelectItem>
+              <SelectItem value="month" className="text-[10px] font-black uppercase">This Month</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex gap-2 items-center">
+          <Popover open={filterCalendarOpen} onOpenChange={setFilterCalendarOpen} modal={true}>
+            <PopoverTrigger asChild>
+              <Button 
+                variant="outline" 
+                className={cn(
+                  "flex-1 h-11 rounded-2xl border-white/5 bg-muted/30 text-[10px] font-black uppercase tracking-widest gap-2 text-foreground",
+                  filterDate && "border-primary/40 bg-primary/5 text-primary"
+                )}
+              >
+                <CalendarIcon className="w-3.5 h-3.5" />
+                {filterDate ? format(filterDate, "dd MMM yyyy") : "Filter by Date"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0 rounded-3xl border border-white/10 glass shadow-2xl" align="start">
+              <Calendar
+                mode="single"
+                captionLayout="dropdown"
+                startMonth={new Date(2020, 0)}
+                endMonth={new Date()}
+                selected={filterDate}
+                onSelect={(date) => {
+                  setFilterDate(date);
+                  setFilterCalendarOpen(false);
+                }}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
+
+          {(filterDate || searchQuery || filterPeriod !== "all") && (
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-11 w-11 rounded-2xl bg-muted/30 text-rose-500 hover:bg-rose-500/10"
+              onClick={() => {
+                setFilterDate(undefined);
+                setSearchQuery("");
+                setFilterPeriod("all");
+              }}
             >
-              <X className="w-3.5 h-3.5 text-muted-foreground" />
-            </button>
+              <FilterX className="w-5 h-5" />
+            </Button>
           )}
         </div>
-        <Select value={filterPeriod} onValueChange={(val: any) => setFilterPeriod(val)}>
-          <SelectTrigger className="w-[140px] h-12 rounded-2xl bg-muted/30 border-white/5 text-[10px] font-black uppercase tracking-widest transition-all hover:bg-muted/50 text-foreground">
-            <SelectValue placeholder="All Time" />
-          </SelectTrigger>
-          <SelectContent className="rounded-2xl border border-white/10 glass shadow-2xl">
-            <SelectItem value="all" className="text-[10px] font-black uppercase">All Time</SelectItem>
-            <SelectItem value="today" className="text-[10px] font-black uppercase">Today</SelectItem>
-            <SelectItem value="week" className="text-[10px] font-black uppercase">This Week</SelectItem>
-            <SelectItem value="month" className="text-[10px] font-black uppercase">This Month</SelectItem>
-          </SelectContent>
-        </Select>
       </div>
 
       <ScrollArea className="flex-1 -mx-4 px-4 overflow-x-hidden">
