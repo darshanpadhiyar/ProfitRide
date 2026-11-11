@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/main
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -27,28 +23,16 @@ import {
   FileDown, 
   ShieldCheck, 
   Loader2, 
-<<<<<<< HEAD
   Calendar as CalendarIcon,
-=======
-  Bike, 
-  Calendar as CalendarIcon,
-  Database,
->>>>>>> origin/main
   Code2,
   Github,
   Linkedin,
   AlertTriangle,
   Lock,
   Mail,
-<<<<<<< HEAD
   Sun,
   Moon,
   Monitor
-=======
-  Zap,
-  CheckCircle2,
-  Info
->>>>>>> origin/main
 } from "lucide-react";
 import Image from "next/image";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
@@ -59,10 +43,6 @@ const MONTHS = [
   "July", "August", "September", "October", "November", "December"
 ];
 
-<<<<<<< HEAD
-=======
-const currentYear = new Date().getFullYear();
->>>>>>> origin/main
 const YEARS = Array.from({ length: 6 }, (_, i) => 2026 - i); 
 
 export default function SettingsPage() {
@@ -87,20 +67,6 @@ export default function SettingsPage() {
     setMounted(true);
   }, []);
 
-<<<<<<< HEAD
-=======
-  const lifetimeStats = useMemo(() => {
-    return entries.reduce((acc, curr) => ({
-      earnings: acc.earnings + curr.earnings + curr.tips + (curr.incentive || 0),
-      profit: acc.profit + curr.netProfit,
-      orders: acc.orders + curr.orders,
-      km: acc.km + curr.distance,
-      hours: acc.hours + curr.onlineHours,
-      expenses: acc.expenses + (curr.manualExpenses || 0)
-    }), { earnings: 0, profit: 0, orders: 0, km: 0, hours: 0, expenses: 0 });
-  }, [entries]);
-
->>>>>>> origin/main
   const exportPeriod = useMemo(() => {
     if (exportRange === "all") return null;
     const date = exportDate;
@@ -249,11 +215,7 @@ export default function SettingsPage() {
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 opacity-50" />
                 <Input 
                   placeholder="Protect with Email" 
-<<<<<<< HEAD
                   className="h-10 pl-10 rounded-xl bg-background/50 border-none text-xs font-bold text-foreground"
-=======
-                  className="h-10 pl-10 rounded-xl bg-background/50 border-none text-xs font-bold"
->>>>>>> origin/main
                   value={upgradeEmail}
                   onChange={(e) => setUpgradeEmail(e.target.value)}
                   required
@@ -264,11 +226,7 @@ export default function SettingsPage() {
                 <Input 
                   type="password"
                   placeholder="Set Password" 
-<<<<<<< HEAD
                   className="h-10 pl-10 rounded-xl bg-background/50 border-none text-xs font-bold text-foreground"
-=======
-                  className="h-10 pl-10 rounded-xl bg-background/50 border-none text-xs font-bold"
->>>>>>> origin/main
                   value={upgradePassword}
                   onChange={(e) => setUpgradePassword(e.target.value)}
                   required
@@ -282,49 +240,13 @@ export default function SettingsPage() {
         </Card>
       )}
 
-<<<<<<< HEAD
-=======
-      <Card className="glass border-none rounded-[2rem] overflow-hidden card-grad-primary shadow-2xl">
-        <CardHeader className="pb-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-primary/10 text-primary shadow-inner">
-              <Database className="w-5 h-5" />
-            </div>
-            <CardTitle className="text-sm font-black uppercase tracking-widest opacity-70">Lifetime Stats</CardTitle>
-          </div>
-        </CardHeader>
-        <CardContent className="grid grid-cols-2 gap-4">
-          <div className="space-y-1">
-            <p className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">Lifetime Revenue</p>
-            <p className="text-xl font-black">₹{lifetimeStats.earnings.toFixed(0)}</p>
-          </div>
-          <div className="space-y-1 text-right">
-            <p className="text-[8px] font-black uppercase tracking-widest text-emerald-400">Total Profit</p>
-            <p className="text-xl font-black text-emerald-400">₹{lifetimeStats.profit.toFixed(0)}</p>
-          </div>
-          <div className="space-y-1">
-            <p className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">Total Orders</p>
-            <p className="text-xl font-black">{lifetimeStats.orders}</p>
-          </div>
-          <div className="space-y-1 text-right">
-            <p className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">Total Expenses</p>
-            <p className="text-xl font-black">₹{lifetimeStats.expenses.toFixed(0)}</p>
-          </div>
-        </CardContent>
-      </Card>
-
->>>>>>> origin/main
       <Card className="glass border-none rounded-[2rem] overflow-hidden shadow-2xl">
         <CardHeader className="pb-4">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-xl bg-primary/10 text-primary shadow-inner">
               <User className="w-5 h-5" />
             </div>
-<<<<<<< HEAD
             <CardTitle className="text-sm font-black uppercase tracking-widest opacity-70 text-foreground">Configuration</CardTitle>
-=======
-            <CardTitle className="text-sm font-black uppercase tracking-widest opacity-70">Settings</CardTitle>
->>>>>>> origin/main
           </div>
         </CardHeader>
         <CardContent className="space-y-5">
@@ -334,11 +256,7 @@ export default function SettingsPage() {
             </div>
             <div className="space-y-0.5">
               <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest">{isAnonymous ? "Guest Mode" : "Verified Account"}</p>
-<<<<<<< HEAD
               <p className="text-md font-black text-foreground">{user?.displayName || "Partner"}</p>
-=======
-              <p className="text-md font-black">{user?.displayName || "Partner"}</p>
->>>>>>> origin/main
             </div>
           </div>
           
@@ -347,11 +265,7 @@ export default function SettingsPage() {
               <Label className="text-[10px] font-black uppercase tracking-widest opacity-60">Petrol Price (₹/L)</Label>
               <Input
                 type="number"
-<<<<<<< HEAD
                 className="h-11 rounded-xl bg-muted/50 border-none font-bold text-foreground"
-=======
-                className="h-11 rounded-xl bg-muted/50 border-none font-bold"
->>>>>>> origin/main
                 value={settings.petrolPrice}
                 onChange={(e) => saveSettings({ ...settings, petrolPrice: Number(e.target.value) })}
               />
@@ -360,18 +274,13 @@ export default function SettingsPage() {
               <Label className="text-[10px] font-black uppercase tracking-widest opacity-60">Mileage (km/L)</Label>
               <Input
                 type="number"
-<<<<<<< HEAD
                 className="h-11 rounded-xl bg-muted/50 border-none font-bold text-foreground"
-=======
-                className="h-11 rounded-xl bg-muted/50 border-none font-bold"
->>>>>>> origin/main
                 value={settings.mileage}
                 onChange={(e) => saveSettings({ ...settings, mileage: Number(e.target.value) })}
               />
             </div>
           </div>
 
-<<<<<<< HEAD
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label className="text-[10px] font-black uppercase tracking-widest opacity-60">Daily Goal (₹)</Label>
@@ -400,25 +309,11 @@ export default function SettingsPage() {
                 </SelectContent>
               </Select>
             </div>
-=======
-          <div className="space-y-2">
-            <Label className="text-[10px] font-black uppercase tracking-widest opacity-60">Daily Goal (₹)</Label>
-            <Input
-              type="number"
-              className="h-11 rounded-xl bg-muted/50 border-none font-bold"
-              value={settings.dailyGoal}
-              onChange={(e) => saveSettings({ ...settings, dailyGoal: Number(e.target.value) })}
-            />
->>>>>>> origin/main
           </div>
 
           <div className="flex items-center justify-between p-4 bg-muted/30 rounded-2xl border border-white/5">
             <div className="space-y-0.5">
-<<<<<<< HEAD
               <Label className="text-sm font-bold text-foreground">Auto Fuel Cost</Label>
-=======
-              <Label className="text-sm font-bold">Auto Fuel Cost</Label>
->>>>>>> origin/main
               <p className="text-[10px] text-muted-foreground font-medium">Calculate fuel based on km</p>
             </div>
             <Switch
@@ -435,11 +330,7 @@ export default function SettingsPage() {
             <div className="p-2 rounded-xl bg-emerald-400/10 text-emerald-400 shadow-inner">
               <FileDown className="w-5 h-5" />
             </div>
-<<<<<<< HEAD
             <CardTitle className="text-sm font-black uppercase tracking-widest opacity-70 text-foreground">Export Data</CardTitle>
-=======
-            <CardTitle className="text-sm font-black uppercase tracking-widest opacity-70">Reports</CardTitle>
->>>>>>> origin/main
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -448,11 +339,7 @@ export default function SettingsPage() {
               <div className="space-y-1.5">
                 <Label className="text-[8px] font-black uppercase tracking-widest opacity-50 ml-1">Range</Label>
                 <Select value={exportRange} onValueChange={setExportRange}>
-<<<<<<< HEAD
                   <SelectTrigger className="h-11 rounded-xl bg-background/50 border-none font-black text-[10px] uppercase tracking-wider text-foreground">
-=======
-                  <SelectTrigger className="h-11 rounded-xl bg-background/50 border-none font-black text-[10px] uppercase tracking-wider">
->>>>>>> origin/main
                     <SelectValue placeholder="Select" />
                   </SelectTrigger>
                   <SelectContent className="rounded-xl border-none shadow-2xl">
@@ -477,11 +364,7 @@ export default function SettingsPage() {
                         value={exportDate.getMonth().toString()} 
                         onValueChange={(val) => setExportDate(prev => setMonth(prev, parseInt(val)))}
                       >
-<<<<<<< HEAD
                         <SelectTrigger className="h-11 rounded-xl bg-background/50 border-none font-black text-[10px] uppercase tracking-wider text-foreground">
-=======
-                        <SelectTrigger className="h-11 rounded-xl bg-background/50 border-none font-black text-[10px] uppercase tracking-wider">
->>>>>>> origin/main
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent className="rounded-xl border-none shadow-2xl">
@@ -496,11 +379,7 @@ export default function SettingsPage() {
                       value={exportDate.getFullYear().toString()} 
                       onValueChange={(val) => setExportDate(prev => setYear(prev, parseInt(val)))}
                     >
-<<<<<<< HEAD
                       <SelectTrigger className="h-11 rounded-xl bg-background/50 border-none font-black text-[10px] uppercase tracking-wider text-foreground">
-=======
-                      <SelectTrigger className="h-11 rounded-xl bg-background/50 border-none font-black text-[10px] uppercase tracking-wider">
->>>>>>> origin/main
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent className="rounded-xl border-none shadow-2xl">
@@ -512,11 +391,7 @@ export default function SettingsPage() {
                   ) : (
                     <Popover>
                       <PopoverTrigger asChild>
-<<<<<<< HEAD
                         <Button variant="outline" className="h-11 w-full rounded-xl bg-background/50 border-none font-black text-[10px] uppercase tracking-wider justify-start gap-2 px-3 overflow-hidden text-foreground">
-=======
-                        <Button variant="outline" className="h-11 w-full rounded-xl bg-background/50 border-none font-black text-[10px] uppercase tracking-wider justify-start gap-2 px-3 overflow-hidden">
->>>>>>> origin/main
                           <CalendarIcon className="w-3.5 h-3.5 text-primary shrink-0" />
                           <span className="truncate">{getExportDateLabel()}</span>
                         </Button>
@@ -552,11 +427,7 @@ export default function SettingsPage() {
             <div className="p-2 rounded-xl bg-primary/10 text-primary shadow-inner">
               <Code2 className="w-5 h-5" />
             </div>
-<<<<<<< HEAD
             <CardTitle className="text-sm font-black uppercase tracking-widest opacity-70 text-foreground">Developer Info</CardTitle>
-=======
-            <CardTitle className="text-sm font-black uppercase tracking-widest opacity-70">Developer Info</CardTitle>
->>>>>>> origin/main
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -571,30 +442,18 @@ export default function SettingsPage() {
               />
             </div>
             <div className="space-y-1">
-<<<<<<< HEAD
               <h3 className="text-lg font-black tracking-tight text-foreground">Darshan Padhiyar</h3>
-=======
-              <h3 className="text-lg font-black tracking-tight">Darshan Padhiyar</h3>
->>>>>>> origin/main
               <p className="text-[10px] font-bold uppercase tracking-widest text-primary">Full Stack Engineer</p>
             </div>
           </div>
           
           <div className="grid grid-cols-2 gap-3">
-<<<<<<< HEAD
             <Button variant="outline" className="rounded-xl h-10 gap-2 border-white/5 bg-muted/20 font-bold text-[10px] uppercase tracking-widest hover:bg-muted/40 text-foreground" asChild>
-=======
-            <Button variant="outline" className="rounded-xl h-10 gap-2 border-white/5 bg-muted/20 font-bold text-[10px] uppercase tracking-widest hover:bg-muted/40" asChild>
->>>>>>> origin/main
               <a href="https://github.com" target="_blank" rel="noopener noreferrer">
                 <Github className="w-4 h-4" /> GitHub
               </a>
             </Button>
-<<<<<<< HEAD
             <Button variant="outline" className="rounded-xl h-10 gap-2 border-white/5 bg-muted/20 font-bold text-[10px] uppercase tracking-widest hover:bg-muted/40 text-foreground" asChild>
-=======
-            <Button variant="outline" className="rounded-xl h-10 gap-2 border-white/5 bg-muted/20 font-bold text-[10px] uppercase tracking-widest hover:bg-muted/40" asChild>
->>>>>>> origin/main
               <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
                 <Linkedin className="w-4 h-4" /> LinkedIn
               </a>
@@ -612,11 +471,7 @@ export default function SettingsPage() {
       </Button>
 
       <div className="mt-4 text-center">
-<<<<<<< HEAD
         <span className="text-[10px] font-black uppercase tracking-widest opacity-30 text-foreground">Secured by ProfitRide Security</span>
-=======
-        <span className="text-[10px] font-black uppercase tracking-widest opacity-30">Secured by ProfitRide Security</span>
->>>>>>> origin/main
       </div>
 
       <BottomNav />

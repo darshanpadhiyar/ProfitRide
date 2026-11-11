@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
@@ -30,13 +29,9 @@ import {
   CircleDashed,
   Gift,
   Coins,
-<<<<<<< HEAD
   Receipt,
   ShieldCheck,
   TrendingDown
-=======
-  Receipt
->>>>>>> origin/main
 } from "lucide-react";
 import { format, subDays, startOfWeek, startOfMonth, isSameDay, isWithinInterval, endOfWeek, endOfMonth, parseISO } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -58,7 +53,6 @@ export default function Dashboard() {
   }, [user, isUserLoading, router]);
 
   const stats = useMemo(() => {
-<<<<<<< HEAD
     if (!mounted || !selectedDate) return { 
       day: null, 
       yesterday: null, 
@@ -71,9 +65,6 @@ export default function Dashboard() {
       weekStart: new Date(), 
       weekEnd: new Date() 
     };
-=======
-    if (!mounted || !selectedDate) return { day: null, yesterday: null, week: null, month: null, daysThisMonth: 0, isPresent: false, totalDays: 0, weekStart: new Date(), weekEnd: new Date() };
->>>>>>> origin/main
 
     const calculateStats = (filteredEntries: any[]) => {
       return filteredEntries.reduce((acc, curr) => ({
@@ -107,7 +98,6 @@ export default function Dashboard() {
 
     const isPresent = sortedDates.includes(selectedDateStr);
 
-<<<<<<< HEAD
     const lifetime = entries.reduce((acc, curr) => ({
       earnings: acc.earnings + curr.earnings + curr.tips + (curr.incentive || 0),
       profit: acc.profit + curr.netProfit,
@@ -115,8 +105,6 @@ export default function Dashboard() {
       expenses: acc.expenses + curr.fuelCost + curr.manualExpenses
     }), { earnings: 0, profit: 0, orders: 0, expenses: 0 });
 
-=======
->>>>>>> origin/main
     return {
       day: calculateStats(entries.filter(e => e.date === selectedDateStr)),
       yesterday: calculateStats(entries.filter(e => e.date === format(dayBefore, 'yyyy-MM-dd'))),
@@ -125,10 +113,7 @@ export default function Dashboard() {
         return isWithinInterval(d, { start: weekStart, end: weekEnd });
       })),
       month: calculateStats(monthEntries),
-<<<<<<< HEAD
       lifetime: { ...lifetime, days: sortedDates.length },
-=======
->>>>>>> origin/main
       daysThisMonth,
       isPresent,
       totalDays: sortedDates.length,
@@ -178,11 +163,7 @@ export default function Dashboard() {
         <div className="space-y-2">
           <div className="flex items-center gap-2 group">
             <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
-<<<<<<< HEAD
             <p className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/80">App Online</p>
-=======
-            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">App Online</p>
->>>>>>> origin/main
           </div>
           <h1 className="text-3xl font-black tracking-tighter text-foreground">
             Hi, {user?.displayName?.split(' ')[0] || "Partner"}
@@ -229,8 +210,6 @@ export default function Dashboard() {
         </div>
       </header>
 
-<<<<<<< HEAD
-      {/* Lifetime Highlight Section */}
       <Card className="border-none rounded-[2.5rem] overflow-hidden bg-gradient-to-br from-primary via-primary/90 to-secondary text-primary-foreground shadow-2xl relative min-h-[220px] flex items-center group cursor-pointer transition-transform active:scale-95">
         <div className="absolute inset-0 bg-black/10 opacity-30" />
         <CardContent className="pt-8 w-full flex justify-between items-center px-8 relative z-10">
@@ -275,25 +254,13 @@ export default function Dashboard() {
         />
         <MiniStat label="Month Days" value={`${stats.daysThisMonth} d`} color="text-secondary" icon={CalendarIcon} />
         <MiniStat label="Month Profit" value={`₹${stats.month.profit.toFixed(0)}`} color="text-primary" icon={Wallet} />
-=======
-      <div className="grid grid-cols-3 gap-3">
-        <MiniStat label="Performance" value={`${isEarningsUp ? "+" : "-"}₹${Math.abs(earningsDiff).toFixed(0)}`} color={isEarningsUp ? "text-emerald-400" : "text-rose-400"} />
-        <MiniStat label="This Month" value={`${stats.daysThisMonth} d`} color="text-secondary" />
-        <MiniStat label="Total Work" value={`${stats.totalDays} d`} color="text-primary" />
->>>>>>> origin/main
       </div>
 
       <Card className={cn(
         "glass border-none rounded-[2rem] overflow-hidden transition-all relative group",
-<<<<<<< HEAD
         stats.isPresent ? "card-grad-primary shadow-primary/20" : "opacity-90"
       )}>
         <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-=======
-        stats.isPresent ? "card-grad-primary shadow-primary/20" : "opacity-80"
-      )}>
-        <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
->>>>>>> origin/main
            <Zap className="w-16 h-16 text-primary" />
         </div>
         <CardContent className="p-6 flex items-center justify-between">
@@ -331,55 +298,6 @@ export default function Dashboard() {
         </TabsList>
 
         <TabsContent value={period} className="space-y-6 mt-8 focus-visible:outline-none">
-          {period === "day" && (
-            <div className="grid gap-4">
-              <Card className="glass card-grad-primary overflow-hidden rounded-[2rem]">
-                <CardContent className="pt-6 space-y-5">
-                  <div className="flex justify-between items-end">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2 text-primary">
-                        <Target className="w-5 h-5" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em]">Earnings Goal</span>
-                      </div>
-                      <p className="text-3xl font-black tracking-tighter">₹{dayStats.earnings.toFixed(0)} <span className="text-sm font-bold opacity-30">/ ₹{settings.dailyGoal}</span></p>
-                    </div>
-                    <div className="text-right">
-                       <p className="text-2xl font-black text-primary">{earningProgress.toFixed(0)}%</p>
-                    </div>
-                  </div>
-                  <Progress value={earningProgress} className="h-3 bg-white/5" />
-                </CardContent>
-              </Card>
-
-              <Card className="glass card-grad-secondary overflow-hidden rounded-[2rem]">
-                <CardContent className="pt-6 space-y-5">
-                  <div className="flex justify-between items-end">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2 text-secondary">
-                        <Trophy className="w-5 h-5" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em]">Order Goal</span>
-                      </div>
-                      <p className="text-3xl font-black tracking-tighter">{dayStats.orders} <span className="text-sm font-bold opacity-30">/ {orderGoal}</span></p>
-                    </div>
-                    <div className="text-right">
-                       <p className="text-2xl font-black text-secondary">{orderProgress.toFixed(0)}%</p>
-                    </div>
-                  </div>
-                  <Progress value={orderProgress} className="h-3 bg-white/5 [&>div]:bg-secondary [&>div]:neural-glow-secondary" />
-                </CardContent>
-              </Card>
-            </div>
-          )}
-
-          <div className="text-center py-2 relative">
-             <div className="absolute inset-x-0 top-1/2 h-px bg-white/5 -z-10" />
-             <p className="bg-background px-6 text-[10px] text-muted-foreground uppercase font-black tracking-[0.3em] opacity-80 inline-block">
-                {period === 'day' ? format(selectedDate, 'MMMM do') : 
-                 period === 'week' ? `${format(weekStart, 'MMM dd')} - ${format(weekEnd, 'MMM dd')}` : 
-                 format(selectedDate, 'MMMM yyyy')}
-             </p>
-          </div>
-
           <div className="grid grid-cols-2 gap-4">
             <StatCard title="Total Earnings" value={`₹${currentStats.earnings.toFixed(0)}`} icon={Wallet} color="text-primary" bg="bg-primary/10" />
             <StatCard title="Tips" value={`₹${currentStats.tips.toFixed(0)}`} icon={Coins} color="text-emerald-400" bg="bg-emerald-400/10" />
@@ -391,22 +309,14 @@ export default function Dashboard() {
             <StatCard title="Expenses" value={`₹${currentStats.expenses.toFixed(0)}`} icon={Receipt} color="text-rose-400" bg="bg-rose-400/10" />
           </div>
 
-<<<<<<< HEAD
           <Card className="bg-primary text-primary-foreground shadow-2xl overflow-hidden relative border-none rounded-[2.5rem] min-h-[160px] flex items-center group cursor-pointer transition-transform active:scale-95">
-=======
-          <Card className="bg-secondary text-secondary-foreground shadow-2xl overflow-hidden relative border-none rounded-[2.5rem] min-h-[160px] flex items-center group cursor-pointer transition-transform active:scale-95">
->>>>>>> origin/main
             <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-20" />
             <CardContent className="pt-6 w-full flex justify-between items-center px-8 relative z-10">
               <div className="space-y-1">
                 <p className="text-[10px] font-black uppercase tracking-[0.3em] opacity-80">
                   {period === 'day' ? "Profit Today" : period === 'week' ? 'Weekly Profit' : 'Monthly Profit'}
                 </p>
-<<<<<<< HEAD
                 <h2 className="text-6xl font-black tracking-tighter drop-shadow-lg text-white">₹{currentStats.profit.toFixed(0)}</h2>
-=======
-                <h2 className="text-6xl font-black tracking-tighter drop-shadow-lg">₹{currentStats.profit.toFixed(0)}</h2>
->>>>>>> origin/main
               </div>
               <TrendingUp className="w-32 h-32 opacity-10 absolute -right-6 -bottom-6 rotate-12 transition-transform group-hover:scale-110 group-hover:rotate-6 duration-700" />
             </CardContent>
@@ -419,7 +329,6 @@ export default function Dashboard() {
   );
 }
 
-<<<<<<< HEAD
 function MiniStat({ label, value, color, icon: Icon }: { label: string, value: string, color: string, icon: any }) {
   return (
     <div className="flex flex-col items-center justify-center p-4 glass rounded-3xl text-center space-y-1.5 border-white/10 group transition-colors hover:bg-white/[0.05]">
@@ -428,13 +337,6 @@ function MiniStat({ label, value, color, icon: Icon }: { label: string, value: s
           <p className="text-[8px] text-muted-foreground uppercase font-black tracking-widest">{label}</p>
           <p className={cn("text-base font-black tracking-tighter leading-none", color)}>{value}</p>
         </div>
-=======
-function MiniStat({ label, value, color }: { label: string, value: string, color: string }) {
-  return (
-    <div className="flex flex-col items-center justify-center p-4 glass rounded-3xl text-center space-y-1 border-white/5">
-        <p className="text-[8px] text-muted-foreground uppercase font-black tracking-widest">{label}</p>
-        <p className={cn("text-sm font-black tracking-tighter", color)}>{value}</p>
->>>>>>> origin/main
     </div>
   );
 }

@@ -1,23 +1,14 @@
-
 "use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-<<<<<<< HEAD
 import { LayoutDashboard, ListPlus, Settings, CalendarCheck } from "lucide-react";
-=======
-import { LayoutDashboard, ListPlus, Settings, CalendarCheck, BrainCircuit } from "lucide-react";
->>>>>>> origin/main
 import { cn } from "@/lib/utils";
 
 const items = [
   { icon: LayoutDashboard, label: "Home", href: "/" },
   { icon: ListPlus, label: "Logs", href: "/entries" },
   { icon: CalendarCheck, label: "Attendance", href: "/attendance" },
-<<<<<<< HEAD
-=======
-  { icon: BrainCircuit, label: "AI Tips", href: "/ai" },
->>>>>>> origin/main
   { icon: Settings, label: "Settings", href: "/settings" },
 ];
 

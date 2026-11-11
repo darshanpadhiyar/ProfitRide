@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo, useRef } from "react";
@@ -35,12 +34,8 @@ import {
   Camera, 
   Loader2,
   Receipt,
-<<<<<<< HEAD
   Zap,
   Clock
-=======
-  Zap
->>>>>>> origin/main
 } from "lucide-react";
 import { format, parseISO, isToday, startOfWeek, startOfMonth, isWithinInterval, endOfWeek, endOfMonth } from "date-fns";
 import { DeliveryEntry } from "@/lib/types";
@@ -187,11 +182,7 @@ export default function EntriesPage() {
   };
 
   const filteredEntries = useMemo(() => {
-<<<<<<< HEAD
     return [...entries].filter(entry => {
-=======
-    return entries.filter(entry => {
->>>>>>> origin/main
       const entryDate = parseISO(entry.date);
       
       let matchesPeriod = true;
@@ -231,11 +222,7 @@ export default function EntriesPage() {
     <div className="py-6 space-y-6 flex flex-col h-[100dvh]">
       <div className="flex justify-between items-center px-1">
         <div className="space-y-1">
-<<<<<<< HEAD
           <h1 className="text-3xl font-black tracking-tighter text-foreground">Logs</h1>
-=======
-          <h1 className="text-3xl font-black tracking-tighter">Logs</h1>
->>>>>>> origin/main
           <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Work History</p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
@@ -244,17 +231,10 @@ export default function EntriesPage() {
               <Plus className="w-5 h-5" /> New Entry
             </Button>
           </DialogTrigger>
-<<<<<<< HEAD
           <DialogContent className="max-w-md glass rounded-[2.5rem] border border-white/10 shadow-[0_30px_60px_rgba(0,0,0,0.8)] p-6 z-[100] outline-none max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <div className="flex items-center justify-between gap-4 mb-4">
                 <DialogTitle className="text-2xl font-black tracking-tighter text-foreground">
-=======
-          <DialogContent className="max-w-md glass rounded-[2.5rem] border border-white/10 shadow-[0_30px_60px_rgba(0,0,0,0.8)] p-8 z-[100] outline-none">
-            <DialogHeader>
-              <div className="flex items-center justify-between gap-4 mb-4">
-                <DialogTitle className="text-2xl font-black tracking-tighter">
->>>>>>> origin/main
                   {editingId ? 'Edit Entry' : 'Log Shift'}
                 </DialogTitle>
                 {!editingId && (
@@ -294,11 +274,7 @@ export default function EntriesPage() {
                       <Button
                         variant="ghost"
                         className={cn(
-<<<<<<< HEAD
                           "w-full h-12 justify-between rounded-2xl bg-muted/30 border border-white/5 font-black text-xs px-4 transition-colors hover:bg-muted/50 text-foreground",
-=======
-                          "w-full h-12 justify-between rounded-2xl bg-muted/30 border border-white/5 font-black text-xs px-4 transition-colors hover:bg-muted/50",
->>>>>>> origin/main
                           !formData.date && "text-muted-foreground"
                         )}
                       >
@@ -329,29 +305,17 @@ export default function EntriesPage() {
                 </div>
                 <div className="space-y-2">
                   <Label className="text-[10px] font-black uppercase tracking-widest opacity-60">Orders</Label>
-<<<<<<< HEAD
                   <Input type="number" inputMode="numeric" placeholder="0" className="h-12 rounded-2xl bg-muted/30 border-none font-black text-center text-foreground" value={formData.orders || ''} onChange={e => setFormData({...formData, orders: Number(e.target.value)})} />
-=======
-                  <Input type="number" inputMode="numeric" placeholder="0" className="h-12 rounded-2xl bg-muted/30 border-none font-black text-center" value={formData.orders || ''} onChange={e => setFormData({...formData, orders: Number(e.target.value)})} />
->>>>>>> origin/main
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-3">
                 <div className="space-y-2">
                   <Label className="text-[10px] font-black uppercase tracking-widest opacity-60">Earnings</Label>
-<<<<<<< HEAD
                   <Input type="number" inputMode="numeric" placeholder="0" className="h-12 rounded-2xl bg-muted/30 border-none font-black text-center text-foreground" value={formData.earnings || ''} onChange={e => setFormData({...formData, earnings: Number(e.target.value)})} />
                 </div>
                 <div className="space-y-2">
                   <Label className="text-[10px] font-black uppercase tracking-widest opacity-60">Tips</Label>
                   <Input type="number" inputMode="numeric" placeholder="0" className="h-12 rounded-2xl bg-muted/30 border-none font-black text-center text-foreground" value={formData.tips || ''} onChange={e => setFormData({...formData, tips: Number(e.target.value)})} />
-=======
-                  <Input type="number" inputMode="numeric" placeholder="0" className="h-12 rounded-2xl bg-muted/30 border-none font-black text-center" value={formData.earnings || ''} onChange={e => setFormData({...formData, earnings: Number(e.target.value)})} />
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-[10px] font-black uppercase tracking-widest opacity-60">Tips</Label>
-                  <Input type="number" inputMode="numeric" placeholder="0" className="h-12 rounded-2xl bg-muted/30 border-none font-black text-center" value={formData.tips || ''} onChange={e => setFormData({...formData, tips: Number(e.target.value)})} />
->>>>>>> origin/main
                 </div>
                 <div className="space-y-2">
                   <Label className="text-[10px] font-black uppercase tracking-widest opacity-60 text-secondary">Incentive</Label>
@@ -361,11 +325,7 @@ export default function EntriesPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-[10px] font-black uppercase tracking-widest opacity-60">Distance (km)</Label>
-<<<<<<< HEAD
                   <Input type="number" inputMode="decimal" placeholder="0.0 km" className="h-12 rounded-2xl bg-muted/30 border-none font-black text-center text-foreground" value={formData.distance || ''} onChange={e => setFormData({...formData, distance: Number(e.target.value)})} />
-=======
-                  <Input type="number" inputMode="decimal" placeholder="0.0 km" className="h-12 rounded-2xl bg-muted/30 border-none font-black text-center" value={formData.distance || ''} onChange={e => setFormData({...formData, distance: Number(e.target.value)})} />
->>>>>>> origin/main
                 </div>
                 <div className="space-y-2">
                   <Label className="text-[10px] font-black uppercase tracking-widest opacity-60">Time</Label>
@@ -375,11 +335,7 @@ export default function EntriesPage() {
                         type="number" 
                         inputMode="numeric"
                         placeholder="HH" 
-<<<<<<< HEAD
                         className="h-12 rounded-2xl bg-muted/30 border-none font-black text-center pr-2 text-foreground" 
-=======
-                        className="h-12 rounded-2xl bg-muted/30 border-none font-black text-center pr-2" 
->>>>>>> origin/main
                         value={currentHrs || ''} 
                         onChange={e => {
                           const h = Number(e.target.value);
@@ -387,22 +343,14 @@ export default function EntriesPage() {
                           setFormData({...formData, onlineHours: h + (m / 60)});
                         }} 
                       />
-<<<<<<< HEAD
                       <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[7px] font-black opacity-30 text-foreground">HR</span>
-=======
-                      <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[7px] font-black opacity-30">HR</span>
->>>>>>> origin/main
                     </div>
                     <div className="relative">
                       <Input 
                         type="number" 
                         inputMode="numeric"
                         placeholder="MM" 
-<<<<<<< HEAD
                         className="h-12 rounded-2xl bg-muted/30 border-none font-black text-center pr-2 text-foreground" 
-=======
-                        className="h-12 rounded-2xl bg-muted/30 border-none font-black text-center pr-2" 
->>>>>>> origin/main
                         value={currentMins || ''} 
                         onChange={e => {
                           const h = currentHrs;
@@ -410,11 +358,7 @@ export default function EntriesPage() {
                           setFormData({...formData, onlineHours: h + (m / 60)});
                         }} 
                       />
-<<<<<<< HEAD
                       <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[7px] font-black opacity-30 text-foreground">MN</span>
-=======
-                      <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[7px] font-black opacity-30">MN</span>
->>>>>>> origin/main
                     </div>
                   </div>
                 </div>
@@ -427,11 +371,7 @@ export default function EntriesPage() {
                     type="number" 
                     inputMode="numeric" 
                     placeholder="0" 
-<<<<<<< HEAD
                     className="h-12 rounded-2xl bg-muted/30 border-none font-black pl-12 text-foreground" 
-=======
-                    className="h-12 rounded-2xl bg-muted/30 border-none font-black pl-12" 
->>>>>>> origin/main
                     value={formData.manualExpenses || ''} 
                     onChange={e => setFormData({...formData, manualExpenses: Number(e.target.value)})} 
                   />
@@ -441,24 +381,15 @@ export default function EntriesPage() {
               
               <div className="p-6 bg-primary/5 rounded-[1.5rem] space-y-4 border border-primary/10 neural-glow">
                 <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest">
-<<<<<<< HEAD
                   <span className="opacity-50 text-foreground">Fuel Cost</span>
                   <span className="text-foreground">₹{calculatedFuel.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="opacity-50 uppercase tracking-widest text-[10px] font-black text-foreground">Net Profit</span>
-=======
-                  <span className="opacity-50">Fuel Cost</span>
-                  <span className="text-foreground">₹{calculatedFuel.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="opacity-50 uppercase tracking-widest text-[10px] font-black">Net Profit</span>
->>>>>>> origin/main
                   <span className="text-primary text-2xl font-black tracking-tighter">₹{estimatedProfit.toFixed(2)}</span>
                 </div>
               </div>
 
-<<<<<<< HEAD
               <div className="flex gap-3">
                 <Button 
                   type="button" 
@@ -479,11 +410,6 @@ export default function EntriesPage() {
                   {editingId ? 'Save Changes' : 'Add Entry'}
                 </Button>
               </div>
-=======
-              <Button type="submit" className="w-full h-14 rounded-[1.5rem] text-xs uppercase tracking-[0.3em] font-black shadow-2xl shadow-primary/20 neural-glow" disabled={isScanning}>
-                {editingId ? 'Save Changes' : 'Add Entry'}
-              </Button>
->>>>>>> origin/main
             </form>
           </DialogContent>
         </Dialog>
@@ -494,11 +420,7 @@ export default function EntriesPage() {
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
           <Input 
             placeholder="Search logs..." 
-<<<<<<< HEAD
             className="pl-12 h-12 rounded-2xl bg-muted/30 border-white/5 focus:bg-muted/50 transition-all font-medium text-sm text-foreground"
-=======
-            className="pl-12 h-12 rounded-2xl bg-muted/30 border-white/5 focus:bg-muted/50 transition-all font-medium text-sm"
->>>>>>> origin/main
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -512,11 +434,7 @@ export default function EntriesPage() {
           )}
         </div>
         <Select value={filterPeriod} onValueChange={(val: any) => setFilterPeriod(val)}>
-<<<<<<< HEAD
           <SelectTrigger className="w-[140px] h-12 rounded-2xl bg-muted/30 border-white/5 text-[10px] font-black uppercase tracking-widest transition-all hover:bg-muted/50 text-foreground">
-=======
-          <SelectTrigger className="w-[140px] h-12 rounded-2xl bg-muted/30 border-white/5 text-[10px] font-black uppercase tracking-widest transition-all hover:bg-muted/50">
->>>>>>> origin/main
             <SelectValue placeholder="All Time" />
           </SelectTrigger>
           <SelectContent className="rounded-2xl border border-white/10 glass shadow-2xl">
@@ -528,11 +446,7 @@ export default function EntriesPage() {
         </Select>
       </div>
 
-<<<<<<< HEAD
       <ScrollArea className="flex-1 -mx-4 px-4 overflow-x-hidden">
-=======
-      <ScrollArea className="flex-1 -mx-4 px-4">
->>>>>>> origin/main
         <div className="space-y-4 pb-32">
           {filteredEntries.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-40 text-muted-foreground opacity-20">
@@ -544,7 +458,6 @@ export default function EntriesPage() {
               const h = Math.floor(entry.onlineHours);
               const m = Math.round((entry.onlineHours % 1) * 60);
               return (
-<<<<<<< HEAD
                 <Card key={entry.id} className="glass border-none hover:bg-white/[0.03] transition-all active:scale-[0.98] rounded-3xl overflow-hidden group w-full">
                   <CardContent className="p-3 sm:p-4 flex gap-2 sm:gap-4 items-center">
                     <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform">
@@ -573,41 +486,10 @@ export default function EntriesPage() {
                     <div className="flex gap-1 sm:gap-2 shrink-0">
                       <Button variant="ghost" size="icon" onClick={() => handleEdit(entry)} className="text-muted-foreground hover:bg-primary/10 hover:text-primary rounded-xl h-8 w-8 sm:h-10 sm:w-10 transition-colors">
                         <Pencil className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-=======
-                <Card key={entry.id} className="glass border-none hover:bg-white/[0.03] transition-all active:scale-[0.98] rounded-3xl overflow-hidden group">
-                  <CardContent className="p-5 flex gap-5 items-center">
-                    <div className="h-14 w-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform">
-                      <Navigation className="w-7 h-7 rotate-45" />
-                    </div>
-                    <div className="flex-1 min-w-0 space-y-2">
-                      <div className="flex items-center gap-2">
-                        <CalendarIcon className="w-3.5 h-3.5 text-primary opacity-60" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">{format(parseISO(entry.date), 'MMM dd, yyyy')}</span>
-                      </div>
-                      <div className="flex gap-8">
-                        <div className="space-y-0.5">
-                          <p className="text-[7px] text-muted-foreground font-black uppercase tracking-widest">Gross</p>
-                          <p className="font-black text-base tracking-tighter">₹{entry.earnings + entry.tips + (entry.incentive || 0)}</p>
-                        </div>
-                        <div className="space-y-0.5">
-                          <p className="text-[7px] text-secondary font-black uppercase tracking-widest">Profit</p>
-                          <p className="font-black text-base tracking-tighter text-secondary">₹{entry.netProfit}</p>
-                        </div>
-                        <div className="space-y-0.5">
-                          <p className="text-[7px] text-muted-foreground font-black uppercase tracking-widest">Time</p>
-                          <p className="font-black text-base tracking-tighter">{h}h {m}m</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button variant="ghost" size="icon" onClick={() => handleEdit(entry)} className="text-muted-foreground hover:bg-primary/10 hover:text-primary rounded-xl h-11 w-11 transition-colors">
-                        <Pencil className="w-4.5 h-4.5" />
->>>>>>> origin/main
                       </Button>
                       
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
-<<<<<<< HEAD
                           <Button variant="ghost" size="icon" className="text-rose-500/50 hover:bg-rose-500/10 hover:text-rose-500 rounded-xl h-8 w-8 sm:h-10 sm:w-10 transition-colors">
                             <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                           </Button>
@@ -616,25 +498,11 @@ export default function EntriesPage() {
                           <AlertDialogHeader>
                             <AlertDialogTitle className="text-2xl font-black tracking-tighter text-foreground">Delete Entry?</AlertDialogTitle>
                             <AlertDialogDescription className="text-xs font-bold leading-relaxed opacity-70 text-foreground">
-=======
-                          <Button variant="ghost" size="icon" className="text-rose-500/50 hover:bg-rose-500/10 hover:text-rose-500 rounded-xl h-11 w-11 transition-colors">
-                            <Trash2 className="w-4.5 h-4.5" />
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent className="rounded-[2rem] border border-white/10 glass shadow-[0_40px_80px_rgba(0,0,0,0.8)] p-8">
-                          <AlertDialogHeader>
-                            <AlertDialogTitle className="text-2xl font-black tracking-tighter">Delete Entry?</AlertDialogTitle>
-                            <AlertDialogDescription className="text-xs font-bold leading-relaxed opacity-70">
->>>>>>> origin/main
                               This will permanently remove the log for {format(parseISO(entry.date), 'dd MMM yyyy')}. This action cannot be undone.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter className="gap-3 mt-6">
-<<<<<<< HEAD
                             <AlertDialogCancel className="rounded-2xl font-black uppercase text-[10px] tracking-widest h-12 border-none bg-muted hover:bg-muted/80 text-foreground">Cancel</AlertDialogCancel>
-=======
-                            <AlertDialogCancel className="rounded-2xl font-black uppercase text-[10px] tracking-widest h-12 border-none bg-muted hover:bg-muted/80">Cancel</AlertDialogCancel>
->>>>>>> origin/main
                             <AlertDialogAction 
                               onClick={() => deleteEntry(entry.id)} 
                               className="rounded-2xl font-black uppercase text-[10px] tracking-widest h-12 bg-rose-500 text-white hover:bg-rose-600 shadow-xl shadow-rose-500/20"

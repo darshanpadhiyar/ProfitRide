@@ -62,11 +62,7 @@
 }
 
 .glass {
-<<<<<<< HEAD
   @apply bg-card/60 dark:bg-card/40 backdrop-blur-xl border border-border/50 shadow-2xl shadow-black/10 dark:shadow-black/40;
-=======
-  @apply bg-card/40 backdrop-blur-xl border border-white/5 shadow-2xl shadow-black/40;
->>>>>>> origin/main
 }
 
 .glass-primary {
