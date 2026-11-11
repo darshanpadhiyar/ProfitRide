@@ -1,0 +1,258 @@
+
+{
+  "entities": {
+    "UserProfile": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "UserProfile",
+      "type": "object",
+      "description": "Stores user-specific settings, preferences, and configurations for the earning tracker, including fuel details and targets.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the UserProfile entity (matches userId)."
+        },
+        "petrolPrice": {
+          "type": "number",
+          "description": "The price of petrol per liter (₹)."
+        },
+        "mileage": {
+          "type": "number",
+          "description": "The mileage of the user's bike in kilometers per liter (km/l)."
+        },
+        "dailyGoal": {
+          "type": "number",
+          "description": "The user's daily earning target in rupees (₹)."
+        },
+        "autoFuelCalc": {
+          "type": "boolean",
+          "description": "Whether automatic fuel cost calculation is enabled."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "petrolPrice",
+        "mileage",
+        "dailyGoal",
+        "autoFuelCalc",
+        "updatedAt"
+      ]
+    },
+    "DeliveryLog": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "DeliveryLog",
+      "type": "object",
+      "description": "Represents a single log entry for a delivery session or a day's work, detailing earnings, distance covered, online hours, and associated costs.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the DeliveryLog entity."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to UserProfile. (Relationship: UserProfile 1:N DeliveryLog)"
+        },
+        "logDate": {
+          "type": "string",
+          "description": "The specific date of this delivery log entry.",
+          "format": "date"
+        },
+        "numberOfOrders": {
+          "type": "number",
+          "description": "The total number of orders completed during this delivery log entry."
+        },
+        "earnings": {
+          "type": "number",
+          "description": "Total earnings in rupees (₹) from deliveries for this log entry."
+        },
+        "incentive": {
+          "type": "number",
+          "description": "Total incentives or bonuses received for this log entry."
+        },
+        "distanceKm": {
+          "type": "number",
+          "description": "Total distance covered in kilometers (km) for deliveries during this log entry."
+        },
+        "onlineHours": {
+          "type": "number",
+          "description": "Total hours spent online for deliveries during this log entry."
+        },
+        "tips": {
+          "type": "number",
+          "description": "Total tips received in rupees (₹) for deliveries during this log entry."
+        },
+        "fuelCost": {
+          "type": "number",
+          "description": "The fuel cost in rupees (₹) for this delivery log entry. This can be auto-calculated based on distance and user settings or manually overridden by the user."
+        },
+        "otherExpensesAmount": {
+          "type": "number",
+          "description": "Manual expenses in rupees (₹) directly associated with this delivery log entry, such as tolls, parking, or specific operational costs for the session."
+        },
+        "netProfit": {
+          "type": "number",
+          "description": "The calculated net profit in rupees (₹) for this delivery log entry (Earnings + Tips + Incentive - Fuel Cost - Other Expenses)."
+        },
+        "notes": {
+          "type": "string",
+          "description": "Optional notes or remarks pertaining to this specific delivery log entry."
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp indicating when this delivery log entry was created.",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Timestamp indicating when this delivery log entry was last updated.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "logDate",
+        "numberOfOrders",
+        "earnings",
+        "distanceKm",
+        "onlineHours",
+        "tips",
+        "fuelCost",
+        "otherExpensesAmount",
+        "netProfit",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "GeneralExpense": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "GeneralExpense",
+      "type": "object",
+      "description": "Tracks broader, general expenses (e.g., food, vehicle maintenance) that are not directly tied to a specific delivery log entry.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the GeneralExpense entity."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to UserProfile. (Relationship: UserProfile 1:N GeneralExpense)"
+        },
+        "expenseDate": {
+          "type": "string",
+          "description": "The specific date when the general expense was incurred.",
+          "format": "date"
+        },
+        "category": {
+          "type": "string",
+          "description": "The category of the expense (e.g., 'Food', 'Maintenance', 'Other') for detailed tracking."
+        },
+        "amount": {
+          "type": "number",
+          "description": "The amount in rupees (₹) of the general expense."
+        },
+        "description": {
+          "type": "string",
+          "description": "Optional description or notes for this general expense entry."
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp indicating when this general expense was recorded.",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Timestamp indicating when this general expense was last updated.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "expenseDate",
+        "category",
+        "amount",
+        "createdAt",
+        "updatedAt"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}/userProfile/{profileId}",
+        "definition": {
+          "entityName": "UserProfile",
+          "schema": {
+            "$ref": "#/backend/entities/UserProfile"
+          },
+          "description": "Stores a single user's profile settings, preferences, and configurations. It is strictly owned by the {userId} specified in the path.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique ID of the user."
+            },
+            {
+              "name": "profileId",
+              "description": "The unique ID for the profile document (usually 'settings')."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/deliveryLogs/{deliveryLogId}",
+        "definition": {
+          "entityName": "DeliveryLog",
+          "schema": {
+            "$ref": "#/backend/entities/DeliveryLog"
+          },
+          "description": "A subcollection holding all delivery log entries for a specific user.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique ID of the user who owns this delivery log."
+            },
+            {
+              "name": "deliveryLogId",
+              "description": "The unique ID for a specific delivery log entry."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/generalExpenses/{generalExpenseId}",
+        "definition": {
+          "entityName": "GeneralExpense",
+          "schema": {
+            "$ref": "#/backend/entities/GeneralExpense"
+          },
+          "description": "A subcollection for general expenses not tied to specific deliveries, belonging to a specific user.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique ID of the user who owns this general expense."
+            },
+            {
+              "name": "generalExpenseId",
+              "description": "The unique ID for a specific general expense entry."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The design prioritizes strong user data isolation and simplified security rules by implementing a hierarchical, user-owned data structure. Each user's data, including their UserProfile, DeliveryLog entries, and GeneralExpense records, resides exclusively within a dedicated path under their unique user ID."
+  }
+}

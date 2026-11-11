@@ -1,0 +1,104 @@
+/**
+ * APPLICATION SECURITY MODEL: Earning Tracker (Prototyping Mode)
+ * 
+ * Core Philosophy:
+ * This ruleset implements a strict, path-based ownership model. Every piece of data in the 
+ * system is nested under a specific user's path (/users/{userId}). Authorization is 
+ * determined by comparing the authenticated user's UID directly against the path variables.
+ * 
+ * Data Structure:
+ * - /users/{userId}/userProfile/{profileId}: A document containing the user's global settings.
+ * - /users/{userId}/deliveryLogs/{logId}: A collection of delivery session records.
+ * - /users/{userId}/generalExpenses/{expenseId}: A collection of non-delivery related costs.
+ * 
+ * Key Security Decisions:
+ * 1. Path-Based Authorization: By using the user's UID in the document path, we achieve 
+ *    "Authorization Independence," meaning we never need to use get() to look up owner 
+ *    information in other documents, reducing latency and cost.
+ * 2. Relational Integrity: While in Prototyping Mode we do not enforce data types, we 
+ *    strictly enforce that the 'userId' field within documents matches the ownership 
+ *    established by the path on creation, and remains immutable thereafter.
+ * 3. Default Deny: All access is denied by default unless explicitly granted. There are 
+ *    no public collections in this application; all data requires authentication.
+ * 4. Robust Writes: All update and delete operations verify document existence before 
+ *    processing to prevent orphaned requests or logic errors.
+ */
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // --- Helper Functions ---
+
+    /** 
+     * @description Basic authentication check.
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /** 
+     * @description Checks if the authenticated user matches the userId provided in the path.
+     */
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    /** 
+     * @description Combines ownership check with document existence for write operations.
+     */
+    function isExistingOwner(userId) {
+      return resource != null && isOwner(userId);
+    }
+
+    // --- Collection Rules ---
+
+    /**
+     * @description Rules for the User's Profile settings.
+     * @path /users/{userId}/userProfile/{profileId}
+     * @allow (get) Authenticated user 'abc' reads /users/abc/userProfile/settings.
+     * @deny (create) Authenticated user 'abc' tries to create /users/xyz/userProfile/settings.
+     * @principle Restricts profile access to the document owner.
+     */
+    match /users/{userId}/userProfile/{profileId} {
+      allow get, list: if isOwner(userId);
+      allow create: if isOwner(userId) && request.resource.data.id == userId;
+      allow update: if isExistingOwner(userId) && request.resource.data.id == resource.data.id;
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Rules for Delivery Logs associated with a specific user.
+     * @path /users/{userId}/deliveryLogs/{deliveryLogId}
+     * @allow (list) Authenticated user 'abc' queries their own deliveryLogs subcollection.
+     * @deny (update) Authenticated user 'abc' tries to change the 'userId' field of their log.
+     * @principle Enforces path-based ownership and relational integrity.
+     */
+    match /users/{userId}/deliveryLogs/{deliveryLogId} {
+      allow get, list: if isOwner(userId);
+      allow create: if isOwner(userId) && request.resource.data.userId == userId;
+      allow update: if isExistingOwner(userId) && request.resource.data.userId == resource.data.userId;
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Rules for General Expenses associated with a specific user.
+     * @path /users/{userId}/generalExpenses/{generalExpenseId}
+     * @allow (create) Authenticated user 'abc' logs a new bike maintenance expense.
+     * @deny (delete) Anonymous user tries to delete an expense record.
+     * @principle Ensures financial data isolation between users.
+     */
+    match /users/{userId}/generalExpenses/{generalExpenseId} {
+      allow get, list: if isOwner(userId);
+      allow create: if isOwner(userId) && request.resource.data.userId == userId;
+      allow update: if isExistingOwner(userId) && request.resource.data.userId == resource.data.userId;
+      allow delete: if isExistingOwner(userId);
+    }
+
+    // --- Global Deny ---
+    // Explicitly deny access to any paths not matched above.
+    match /{path=**} {
+      allow read, write: if false;
+    }
+  }
+}

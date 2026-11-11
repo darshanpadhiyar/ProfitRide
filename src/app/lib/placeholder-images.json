@@ -1,0 +1,11 @@
+
+{
+  "placeholderImages": [
+    {
+      "id": "darshan-profile",
+      "description": "Professional portrait of Darshan Padhiyar, Full Stack Engineer",
+      "imageUrl": "https://res.cloudinary.com/dvzar9wo3/image/upload/v1778214289/darshan_profile_c8ivpd.jpg",
+      "imageHint": "professional man"
+    }
+  ]
+}

@@ -1,0 +1,456 @@
+
+"use client";
+
+import { useState, useMemo, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useTracker } from "@/hooks/use-tracker";
+import { useUser } from "@/firebase";
+import { BottomNav } from "@/components/layout/bottom-nav";
+import { Card, CardContent } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { 
+  Wallet, 
+  Package, 
+  MapPin, 
+  Clock, 
+  Fuel, 
+  TrendingUp, 
+  Target,
+  Calendar as CalendarIcon,
+  ChevronLeft,
+  ChevronRight,
+  Zap,
+  Loader2,
+  Trophy,
+  CheckCircle2,
+  CircleDashed,
+  Gift,
+  Coins,
+<<<<<<< HEAD
+  Receipt,
+  ShieldCheck,
+  TrendingDown
+=======
+  Receipt
+>>>>>>> origin/main
+} from "lucide-react";
+import { format, subDays, startOfWeek, startOfMonth, isSameDay, isWithinInterval, endOfWeek, endOfMonth, parseISO } from "date-fns";
+import { cn } from "@/lib/utils";
+
+export default function Dashboard() {
+  const { user, isUserLoading } = useUser();
+  const router = useRouter();
+  const { entries, settings, loading } = useTracker();
+  const [period, setPeriod] = useState("day");
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+  const [calendarOpen, setCalendarOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    if (!isUserLoading && !user) {
+      router.push("/login");
+    }
+  }, [user, isUserLoading, router]);
+
+  const stats = useMemo(() => {
+<<<<<<< HEAD
+    if (!mounted || !selectedDate) return { 
+      day: null, 
+      yesterday: null, 
+      week: null, 
+      month: null, 
+      lifetime: { earnings: 0, profit: 0, orders: 0, days: 0, expenses: 0 },
+      daysThisMonth: 0, 
+      isPresent: false, 
+      totalDays: 0, 
+      weekStart: new Date(), 
+      weekEnd: new Date() 
+    };
+=======
+    if (!mounted || !selectedDate) return { day: null, yesterday: null, week: null, month: null, daysThisMonth: 0, isPresent: false, totalDays: 0, weekStart: new Date(), weekEnd: new Date() };
+>>>>>>> origin/main
+
+    const calculateStats = (filteredEntries: any[]) => {
+      return filteredEntries.reduce((acc, curr) => ({
+        earnings: acc.earnings + curr.earnings + curr.tips + (curr.incentive || 0),
+        tips: acc.tips + (curr.tips || 0),
+        incentive: acc.incentive + (curr.incentive || 0),
+        orders: acc.orders + curr.orders,
+        distance: acc.distance + curr.distance,
+        hours: acc.hours + curr.onlineHours,
+        fuel: acc.fuel + curr.fuelCost,
+        expenses: acc.expenses + (curr.manualExpenses || 0),
+        profit: acc.profit + curr.netProfit
+      }), { earnings: 0, tips: 0, incentive: 0, orders: 0, distance: 0, hours: 0, fuel: 0, expenses: 0, profit: 0 });
+    };
+
+    const referenceDate = selectedDate;
+    const selectedDateStr = format(referenceDate, 'yyyy-MM-dd');
+    const dayBefore = subDays(referenceDate, 1);
+    const weekStart = startOfWeek(referenceDate, { weekStartsOn: 1 });
+    const weekEnd = endOfWeek(referenceDate, { weekStartsOn: 1 });
+    const monthStart = startOfMonth(referenceDate);
+    const monthEnd = endOfMonth(referenceDate);
+
+    const sortedDates = Array.from(new Set(entries.map(e => e.date)));
+    
+    const monthEntries = entries.filter(e => {
+      const d = parseISO(e.date);
+      return isWithinInterval(d, { start: monthStart, end: monthEnd });
+    });
+    const daysThisMonth = new Set(monthEntries.map(e => e.date)).size;
+
+    const isPresent = sortedDates.includes(selectedDateStr);
+
+<<<<<<< HEAD
+    const lifetime = entries.reduce((acc, curr) => ({
+      earnings: acc.earnings + curr.earnings + curr.tips + (curr.incentive || 0),
+      profit: acc.profit + curr.netProfit,
+      orders: acc.orders + curr.orders,
+      expenses: acc.expenses + curr.fuelCost + curr.manualExpenses
+    }), { earnings: 0, profit: 0, orders: 0, expenses: 0 });
+
+=======
+>>>>>>> origin/main
+    return {
+      day: calculateStats(entries.filter(e => e.date === selectedDateStr)),
+      yesterday: calculateStats(entries.filter(e => e.date === format(dayBefore, 'yyyy-MM-dd'))),
+      week: calculateStats(entries.filter(e => {
+        const d = parseISO(e.date);
+        return isWithinInterval(d, { start: weekStart, end: weekEnd });
+      })),
+      month: calculateStats(monthEntries),
+<<<<<<< HEAD
+      lifetime: { ...lifetime, days: sortedDates.length },
+=======
+>>>>>>> origin/main
+      daysThisMonth,
+      isPresent,
+      totalDays: sortedDates.length,
+      weekStart,
+      weekEnd
+    };
+  }, [entries, selectedDate, mounted]);
+
+  if (!mounted || isUserLoading || loading || !selectedDate) return (
+    <div className="h-[100dvh] flex flex-col items-center justify-center space-y-4">
+      <div className="relative">
+        <Loader2 className="w-12 h-12 animate-spin text-primary" />
+        <Zap className="w-4 h-4 text-primary absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+      </div>
+      <p className="text-muted-foreground text-[10px] font-black uppercase tracking-[0.3em] animate-pulse">Syncing Cloud...</p>
+    </div>
+  );
+
+  if (!user) return null;
+
+  const currentStats = period === "day" ? stats.day! : period === "week" ? stats.week! : stats.month!;
+  const dayStats = stats.day!;
+  const yesterdayStats = stats.yesterday!;
+  
+  const earningProgress = Math.min((dayStats.earnings / settings.dailyGoal) * 100, 100);
+  const orderGoal = 20; 
+  const orderProgress = Math.min((dayStats.orders / orderGoal) * 100, 100);
+
+  const earningsDiff = dayStats.earnings - yesterdayStats.earnings;
+  const isEarningsUp = earningsDiff >= 0;
+
+  const handlePrevDay = () => setSelectedDate(prev => prev ? subDays(prev, 1) : new Date());
+  const handleNextDay = () => setSelectedDate(prev => prev ? subDays(prev, -1) : new Date());
+
+  const formatHours = (decimalHours: number) => {
+    const h = Math.floor(decimalHours);
+    const m = Math.round((decimalHours % 1) * 60);
+    return `${h}h ${m}m`;
+  };
+
+  const weekStart = stats.weekStart;
+  const weekEnd = stats.weekEnd;
+
+  return (
+    <div className="py-6 space-y-8 pb-32">
+      <header className="flex justify-between items-start px-1">
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 group">
+            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
+<<<<<<< HEAD
+            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/80">App Online</p>
+=======
+            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">App Online</p>
+>>>>>>> origin/main
+          </div>
+          <h1 className="text-3xl font-black tracking-tighter text-foreground">
+            Hi, {user?.displayName?.split(' ')[0] || "Partner"}
+          </h1>
+          <div className="flex items-center gap-2">
+            <p className="text-muted-foreground text-[10px] font-bold uppercase tracking-widest">{format(selectedDate, 'EEEE, MMM dd')}</p>
+            <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+              <PopoverTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-6 w-6 text-primary rounded-full hover:bg-primary/10 transition-colors">
+                  <CalendarIcon className="w-3.5 h-3.5" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0 z-50 rounded-[2rem] border border-white/10 glass shadow-2xl" align="start">
+                <Calendar
+                  mode="single"
+                  captionLayout="dropdown"
+                  startMonth={new Date(2020, 0)}
+                  endMonth={new Date()}
+                  selected={selectedDate}
+                  onSelect={(date) => {
+                    if (date) {
+                      setSelectedDate(date);
+                      setCalendarOpen(false);
+                    }
+                  }}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+        </div>
+        <div className="flex flex-col items-end gap-3">
+          <div className="bg-primary/10 text-primary px-3 py-1.5 rounded-2xl text-[10px] font-black flex items-center gap-2 border border-primary/20 uppercase tracking-wider neural-glow">
+            <Fuel className="w-3.5 h-3.5" /> ₹{settings.petrolPrice}/L
+          </div>
+          <div className="flex bg-muted/30 rounded-full p-1 border border-white/5 backdrop-blur-sm">
+            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-primary/10" onClick={handlePrevDay}>
+              <ChevronLeft className="w-5 h-5" />
+            </Button>
+            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-primary/10" onClick={handleNextDay} disabled={isSameDay(selectedDate, new Date())}>
+              <ChevronRight className="w-5 h-5" />
+            </Button>
+          </div>
+        </div>
+      </header>
+
+<<<<<<< HEAD
+      {/* Lifetime Highlight Section */}
+      <Card className="border-none rounded-[2.5rem] overflow-hidden bg-gradient-to-br from-primary via-primary/90 to-secondary text-primary-foreground shadow-2xl relative min-h-[220px] flex items-center group cursor-pointer transition-transform active:scale-95">
+        <div className="absolute inset-0 bg-black/10 opacity-30" />
+        <CardContent className="pt-8 w-full flex justify-between items-center px-8 relative z-10">
+          <div className="space-y-4 w-full">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                 <ShieldCheck className="w-4 h-4 text-white" />
+                 <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/90">Total Career Profit</p>
+              </div>
+              <h2 className="text-7xl font-black tracking-tighter drop-shadow-2xl text-white">₹{stats.lifetime.profit.toFixed(0)}</h2>
+            </div>
+
+            <div className="grid grid-cols-2 gap-y-4 gap-x-8 pt-2">
+              <div className="space-y-0.5">
+                <p className="text-[8px] font-black uppercase tracking-widest text-white/70">Revenue</p>
+                <p className="text-sm font-black text-white">₹{stats.lifetime.earnings.toFixed(0)}</p>
+              </div>
+              <div className="space-y-0.5 border-l border-white/20 pl-4">
+                <p className="text-[8px] font-black uppercase tracking-widest text-white/70">Expenses</p>
+                <p className="text-sm font-black text-white">₹{stats.lifetime.expenses.toFixed(0)}</p>
+              </div>
+              <div className="space-y-0.5">
+                <p className="text-[8px] font-black uppercase tracking-widest text-white/70">Orders</p>
+                <p className="text-sm font-black text-white">{stats.lifetime.orders}</p>
+              </div>
+              <div className="space-y-0.5 border-l border-white/20 pl-4">
+                <p className="text-[8px] font-black uppercase tracking-widest text-white/70">Total Days</p>
+                <p className="text-sm font-black text-white">{stats.lifetime.days}</p>
+              </div>
+            </div>
+          </div>
+          <Trophy className="w-48 h-48 text-white/10 absolute -right-8 -bottom-10 rotate-12 transition-transform group-hover:scale-110 group-hover:rotate-6 duration-700 pointer-events-none" />
+        </CardContent>
+      </Card>
+
+      <div className="grid grid-cols-3 gap-3">
+        <MiniStat 
+          label="Growth" 
+          value={`${isEarningsUp ? "+" : "-"}₹${Math.abs(earningsDiff).toFixed(0)}`} 
+          color={isEarningsUp ? "text-emerald-400" : "text-rose-400"} 
+          icon={isEarningsUp ? TrendingUp : TrendingDown}
+        />
+        <MiniStat label="Month Days" value={`${stats.daysThisMonth} d`} color="text-secondary" icon={CalendarIcon} />
+        <MiniStat label="Month Profit" value={`₹${stats.month.profit.toFixed(0)}`} color="text-primary" icon={Wallet} />
+=======
+      <div className="grid grid-cols-3 gap-3">
+        <MiniStat label="Performance" value={`${isEarningsUp ? "+" : "-"}₹${Math.abs(earningsDiff).toFixed(0)}`} color={isEarningsUp ? "text-emerald-400" : "text-rose-400"} />
+        <MiniStat label="This Month" value={`${stats.daysThisMonth} d`} color="text-secondary" />
+        <MiniStat label="Total Work" value={`${stats.totalDays} d`} color="text-primary" />
+>>>>>>> origin/main
+      </div>
+
+      <Card className={cn(
+        "glass border-none rounded-[2rem] overflow-hidden transition-all relative group",
+<<<<<<< HEAD
+        stats.isPresent ? "card-grad-primary shadow-primary/20" : "opacity-90"
+      )}>
+        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+=======
+        stats.isPresent ? "card-grad-primary shadow-primary/20" : "opacity-80"
+      )}>
+        <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+>>>>>>> origin/main
+           <Zap className="w-16 h-16 text-primary" />
+        </div>
+        <CardContent className="p-6 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className={cn(
+              "p-3.5 rounded-2xl transition-all duration-500",
+              stats.isPresent ? "bg-primary text-primary-foreground shadow-[0_0_20px_rgba(14,165,233,0.4)]" : "bg-muted text-muted-foreground"
+            )}>
+              {stats.isPresent ? <CheckCircle2 className="w-6 h-6" /> : <CircleDashed className="w-6 h-6 animate-[spin_4s_linear_infinite]" />}
+            </div>
+            <div className="space-y-0.5">
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-60">Status</p>
+              <h3 className="text-xl font-black tracking-tight">
+                {stats.isPresent ? "Shift Logged" : "No Shift Yet"}
+              </h3>
+            </div>
+          </div>
+          {!stats.isPresent && (
+            <Button 
+              size="sm" 
+              className="rounded-xl h-10 px-5 font-black text-[10px] uppercase tracking-widest shadow-xl shadow-primary/20 animate-float"
+              onClick={() => router.push('/entries')}
+            >
+              Add Entry
+            </Button>
+          )}
+        </CardContent>
+      </Card>
+
+      <Tabs defaultValue="day" onValueChange={setPeriod} className="w-full">
+        <TabsList className="grid w-full grid-cols-3 p-1.5 glass rounded-[1.5rem] h-14">
+          <TabsTrigger value="day" className="rounded-2xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:neural-glow font-black text-[10px] uppercase tracking-widest">Today</TabsTrigger>
+          <TabsTrigger value="week" className="rounded-2xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:neural-glow font-black text-[10px] uppercase tracking-widest">Week</TabsTrigger>
+          <TabsTrigger value="month" className="rounded-2xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:neural-glow font-black text-[10px] uppercase tracking-widest">Month</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value={period} className="space-y-6 mt-8 focus-visible:outline-none">
+          {period === "day" && (
+            <div className="grid gap-4">
+              <Card className="glass card-grad-primary overflow-hidden rounded-[2rem]">
+                <CardContent className="pt-6 space-y-5">
+                  <div className="flex justify-between items-end">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2 text-primary">
+                        <Target className="w-5 h-5" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em]">Earnings Goal</span>
+                      </div>
+                      <p className="text-3xl font-black tracking-tighter">₹{dayStats.earnings.toFixed(0)} <span className="text-sm font-bold opacity-30">/ ₹{settings.dailyGoal}</span></p>
+                    </div>
+                    <div className="text-right">
+                       <p className="text-2xl font-black text-primary">{earningProgress.toFixed(0)}%</p>
+                    </div>
+                  </div>
+                  <Progress value={earningProgress} className="h-3 bg-white/5" />
+                </CardContent>
+              </Card>
+
+              <Card className="glass card-grad-secondary overflow-hidden rounded-[2rem]">
+                <CardContent className="pt-6 space-y-5">
+                  <div className="flex justify-between items-end">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2 text-secondary">
+                        <Trophy className="w-5 h-5" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em]">Order Goal</span>
+                      </div>
+                      <p className="text-3xl font-black tracking-tighter">{dayStats.orders} <span className="text-sm font-bold opacity-30">/ {orderGoal}</span></p>
+                    </div>
+                    <div className="text-right">
+                       <p className="text-2xl font-black text-secondary">{orderProgress.toFixed(0)}%</p>
+                    </div>
+                  </div>
+                  <Progress value={orderProgress} className="h-3 bg-white/5 [&>div]:bg-secondary [&>div]:neural-glow-secondary" />
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
+          <div className="text-center py-2 relative">
+             <div className="absolute inset-x-0 top-1/2 h-px bg-white/5 -z-10" />
+             <p className="bg-background px-6 text-[10px] text-muted-foreground uppercase font-black tracking-[0.3em] opacity-80 inline-block">
+                {period === 'day' ? format(selectedDate, 'MMMM do') : 
+                 period === 'week' ? `${format(weekStart, 'MMM dd')} - ${format(weekEnd, 'MMM dd')}` : 
+                 format(selectedDate, 'MMMM yyyy')}
+             </p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <StatCard title="Total Earnings" value={`₹${currentStats.earnings.toFixed(0)}`} icon={Wallet} color="text-primary" bg="bg-primary/10" />
+            <StatCard title="Tips" value={`₹${currentStats.tips.toFixed(0)}`} icon={Coins} color="text-emerald-400" bg="bg-emerald-400/10" />
+            <StatCard title="Incentives" value={`₹${currentStats.incentive.toFixed(0)}`} icon={Gift} color="text-secondary" bg="bg-secondary/10" />
+            <StatCard title="Orders" value={currentStats.orders} icon={Package} color="text-blue-400" bg="bg-blue-400/10" />
+            <StatCard title="Distance" value={`${currentStats.distance.toFixed(1)} km`} icon={MapPin} color="text-emerald-400" bg="bg-emerald-400/10" />
+            <StatCard title="Work Time" value={formatHours(currentStats.hours)} icon={Clock} color="text-amber-400" bg="bg-amber-400/10" />
+            <StatCard title="Fuel Cost" value={`₹${currentStats.fuel.toFixed(0)}`} icon={Fuel} color="text-orange-400" bg="bg-orange-400/10" />
+            <StatCard title="Expenses" value={`₹${currentStats.expenses.toFixed(0)}`} icon={Receipt} color="text-rose-400" bg="bg-rose-400/10" />
+          </div>
+
+<<<<<<< HEAD
+          <Card className="bg-primary text-primary-foreground shadow-2xl overflow-hidden relative border-none rounded-[2.5rem] min-h-[160px] flex items-center group cursor-pointer transition-transform active:scale-95">
+=======
+          <Card className="bg-secondary text-secondary-foreground shadow-2xl overflow-hidden relative border-none rounded-[2.5rem] min-h-[160px] flex items-center group cursor-pointer transition-transform active:scale-95">
+>>>>>>> origin/main
+            <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-20" />
+            <CardContent className="pt-6 w-full flex justify-between items-center px-8 relative z-10">
+              <div className="space-y-1">
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] opacity-80">
+                  {period === 'day' ? "Profit Today" : period === 'week' ? 'Weekly Profit' : 'Monthly Profit'}
+                </p>
+<<<<<<< HEAD
+                <h2 className="text-6xl font-black tracking-tighter drop-shadow-lg text-white">₹{currentStats.profit.toFixed(0)}</h2>
+=======
+                <h2 className="text-6xl font-black tracking-tighter drop-shadow-lg">₹{currentStats.profit.toFixed(0)}</h2>
+>>>>>>> origin/main
+              </div>
+              <TrendingUp className="w-32 h-32 opacity-10 absolute -right-6 -bottom-6 rotate-12 transition-transform group-hover:scale-110 group-hover:rotate-6 duration-700" />
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+
+      <BottomNav />
+    </div>
+  );
+}
+
+<<<<<<< HEAD
+function MiniStat({ label, value, color, icon: Icon }: { label: string, value: string, color: string, icon: any }) {
+  return (
+    <div className="flex flex-col items-center justify-center p-4 glass rounded-3xl text-center space-y-1.5 border-white/10 group transition-colors hover:bg-white/[0.05]">
+        <Icon className={cn("w-4 h-4 opacity-60 group-hover:scale-110 transition-transform", color)} />
+        <div className="space-y-0.5">
+          <p className="text-[8px] text-muted-foreground uppercase font-black tracking-widest">{label}</p>
+          <p className={cn("text-base font-black tracking-tighter leading-none", color)}>{value}</p>
+        </div>
+=======
+function MiniStat({ label, value, color }: { label: string, value: string, color: string }) {
+  return (
+    <div className="flex flex-col items-center justify-center p-4 glass rounded-3xl text-center space-y-1 border-white/5">
+        <p className="text-[8px] text-muted-foreground uppercase font-black tracking-widest">{label}</p>
+        <p className={cn("text-sm font-black tracking-tighter", color)}>{value}</p>
+>>>>>>> origin/main
+    </div>
+  );
+}
+
+function StatCard({ title, value, icon: Icon, color, bg }: any) {
+  return (
+    <Card className="glass border-none rounded-[1.5rem] group hover:bg-white/[0.02] transition-colors">
+      <CardContent className="p-5 space-y-5">
+        <div className={`p-3 w-fit rounded-2xl ${bg} ${color} transition-transform group-hover:scale-110`}>
+          <Icon className="w-5 h-5" />
+        </div>
+        <div>
+          <p className="text-[9px] text-muted-foreground font-black uppercase tracking-[0.2em] mb-1.5">{title}</p>
+          <p className="text-xl font-black tracking-tight">{value}</p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
